@@ -43,10 +43,10 @@ git clone https://github.com/gulmmdoff/GOfensive.git
 
 2. Build & Run the Teamserver
 From the project root, start the server.
-go run cmd/server/main.go.
+  go run cmd/server/main.go
 
 3. Compile the Agent (The Payload).
-For Windows:.
-go build -o ../Path/agent.exe ./cmd/agent/main.go.
+For Windows:
+go build -o ../Path/agent.exe  ./cmd/agent/main.go
 
 
