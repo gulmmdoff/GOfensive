@@ -44,8 +44,10 @@ git clone [https://github.com/gulmmdoff/GOfensive.git](https://github.com/gulmmd
 cd GOfensive
 
 
+---
+##
 
-### 2. Clone the Repository
+2. Clone the Repository
 ```bash
 git clone [https://github.com/gulmmdoff/GOfensive.git](https://github.com/gulmmdoff/GOfensive.git)
 cd GOfensive
