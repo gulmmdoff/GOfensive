@@ -1,43 +1,45 @@
 ![image alt](https://github.com/gulmmdoff/GOfensive/blob/2d6c7f408b1773e9c0c37be5a49f1c9092e5febc/GOfensive.png).
 # ⚔️ GOfensive: Lightweight & Malleable C2 Framework
 
-**GOfensive**, real dünya kiber-hücum infrastrukturunu simulyasiya etmək üçün hazırlanmış modern bir Command & Control (C2) sistemidir. Go dilinin gücündən istifadə edərək, hədəf sistemlərdə minimal iz buraxan və genişləndirilə bilən modulyar bir arxitektura təqdim edir.
+
+
+**GOfensive** is a modern Command & Control (C2) framework designed to simulate real-world adversary infrastructure. Built with the power of Golang, it provides a lightweight, extensible architecture for managing agents, executing remote commands, and monitoring compromised systems with minimal footprint.
 
 ---
 
 ## 🚀 Features
 
-- **Agent-Based Architecture:** Yüngül və effektiv agent idarəetməsi.
-- **Remote Shell Execution:** Hədəf sistemlərdə birbaşa əmr icrası.
-- **Real-time Monitoring:** Aktiv agentlərin anlıq izlənilməsi və status hesabatı.
-- **Minimalist Web UI:** Sadə, sürətli və effektiv idarəetmə paneli.
-- **Zero-Dependency Agent:** Heç bir xarici kitabxanadan asılı olmayan Go implementation.
-- **Lab & CTF Ready:** Xüsusi laboratoriya və CTF mühitləri üçün optimallaşdırılmış struktur.
+- **Agent-Based Architecture:** Efficient and stable management of remote sessions.
+- **Remote Shell Execution:** Execute system commands directly on target machines.
+- **Real-time Monitoring:** Instant tracking of active agents and their status reports.
+- **Minimalist Web UI:** Fast, responsive, and effective operator control panel.
+- **Zero-Dependency Agent:** Single-binary Go implementation with no external library requirements.
+- **Lab & CTF Ready:** Optimized specifically for controlled lab environments and CTF challenges.
 
 ---
 
 ## 🏗️ Project Structure
 
-- `cmd/` — Giriş nöqtələri: Server və Agent-in ana kodları.
-- `internal/` — Core məntiq: Handler-lər, modellər və təhlükəsizlik alqoritmləri.
-- `ui/` — Frontend: Operatorun idarəetmə paneli.
+- `cmd/` — Entry points: Main source code for both Server and Agent.
+- `internal/` — Core logic: Handlers, database models, and security algorithms.
+- `ui/` — Frontend: The operator's web-based management console.
 
 ---
 
 ## 🌐 Architecture
 
-GOfensive üç tərəfli sinxron əlaqə üzərində qurulub:
+GOfensive operates on a three-way synchronized communication model:
 `Agent <----HTTP----> C2 Server <----> Web UI`
 
-1. **Agents:** Müəyyən intervallarla serverə "check-in" edir və tapşırıqları götürür.
-2. **Server:** Tapşırıqların idarə edilməsi, cavabların emalı və bazada saxlanılması.
-3. **UI:** Operatorun sistemləri vizual idarə etməsi üçün interfeys.
+1. **Agents:** Connect back to the server at defined intervals to "check-in" and fetch pending tasks.
+2. **Server:** Handles tasking, processes agent responses, and maintains the persistent database.
+3. **UI:** Allows the operator to interact with the system and visualize agent activity.
 
 ---
 
 ## ⚡ Quick Start
 
-### 1. Repository-ni klonlayın
+### 1. Clone the Repository
 ```bash
 git clone [https://github.com/gulmmdoff/GOfensive.git](https://github.com/gulmmdoff/GOfensive.git)
 cd GOfensive
