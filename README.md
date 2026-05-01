@@ -1,3 +1,4 @@
+![](https://github.com/gulmmdoff/GOfensive/blob/0f1786cbfac75f3a108f0ea1800043caa403c68a/2c9e343a-87e9-4c04-a370-f31de24d7e7a.png).
 ![image alt](https://github.com/gulmmdoff/GOfensive/blob/2d6c7f408b1773e9c0c37be5a49f1c9092e5febc/GOfensive.png).
 # ⚔️ GOfensive: Lightweight & Malleable C2 Framework
 
