@@ -6,8 +6,7 @@ cd GOfensive
 go run cmd/server/main.go
 2. Compile Agent
 Agenti hədəfə uyğun olaraq aşağıdakı kimi compile edin:
-
-# Windows 
+ 
 go build -o agent.exe ./cmd/agent/main.go
 
 3. Command Execution
