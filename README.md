@@ -1,5 +1,4 @@
-![image alt](There was an error committing your changes: A file with the same name already exists. Please choose a different name and try again.
-
+![image alt](https://github.com/gulmmdoff/GOfensive/blob/2d6c7f408b1773e9c0c37be5a49f1c9092e5febc/GOfensive.png
 Quick Start
 1. Build & Run Server
 
