@@ -13,7 +13,6 @@
 - **Remote Shell Execution:** Execute system commands directly on target machines.
 - **Real-time Monitoring:** Instant tracking of active agents and their status reports.
 - **Minimalist Web UI:** Fast, responsive, and effective operator control panel.
-- **Zero-Dependency Agent:** Single-binary Go implementation with no external library requirements.
 - **Lab & CTF Ready:** Optimized specifically for controlled lab environments and CTF challenges.
 
 ---
@@ -40,6 +39,13 @@ GOfensive operates on a three-way synchronized communication model:
 ## ⚡ Quick Start
 
 ### 1. Clone the Repository
+```bash
+git clone [https://github.com/gulmmdoff/GOfensive.git](https://github.com/gulmmdoff/GOfensive.git)
+cd GOfensive
+
+
+
+### 2. Clone the Repository
 ```bash
 git clone [https://github.com/gulmmdoff/GOfensive.git](https://github.com/gulmmdoff/GOfensive.git)
 cd GOfensive
